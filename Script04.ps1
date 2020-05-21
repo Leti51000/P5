@@ -1,19 +1,27 @@
-#Sauvegarde automatisé des fichiers client sur C:SAV
+﻿#Script04
 
-#Copier le dossier document de mon user client et le coller dans le dossier du serveur dans C:/SAV à son nom
+#Sauvegarde automatisée des fichiers client sur C:\SAV
+#Exclus les dossiers Images, Musiques et vidéos
 
 Try{
-Copy-Item -Path $Env:USERPROFILE\Documents -Destination \\SERVADACME\SAV\$env:USERNAME -Recurse
+$excludes = "Mes images","Mes vidéos","Ma musique"
+Get-ChildItem $Env:USERPROFILE\Documents -Directory | 
+    Where-Object{$_.Name -notin $excludes} | 
+    Copy-Item -Destination \\SERVADACME\SAV\$env:USERNAME -Recurse -Force
 }
+#Si erreur dans la sauvegarde, affichage d'un message
 Catch{
 Write-Host "Erreur de sauvegarde"
 
 exit 1
 }
+
 Write-Host "Sauvegarde effectuée avec succés"
 
-#Si sauvegarde faite, l'ordinateur s'eteint
 
-Stop-computer -ComputerName localhost
+#Si sauvegarde faite, l'ordinateur s'eteindra
+
+#Stop-computer -ComputerName localhost
 
 exit 0
+
